@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 public class Main {
     private static LaundryQueue<LaundryRequest> queue;
-    private static int n;
+    private static final int N = 9;
     private static int variantA;
     private static int variantB;
     private static int variantC;
@@ -27,20 +27,7 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        n = 0;
-        while (n == 0) {
-            System.out.print("Введите начальный номер N (1-36): ");
-            String line = scanner.nextLine().trim();
-            try {
-                int value = Integer.parseInt(line);
-                variantA = StageAccess.initial(value);
-                n = value;
-            } catch (NumberFormatException e) {
-                System.out.println("Ошибка: введите целое число.");
-            } catch (IllegalArgumentException e) {
-                System.out.println("Ошибка: " + e.getMessage());
-            }
-        }
+        variantA = StageAccess.initial(N);
         System.out.println("Назначен вариант задания 1: А" + variantA);
 
         boolean running = true;
@@ -106,10 +93,6 @@ public class Main {
             System.out.println("Этап 1 уже выполнен.");
             return;
         }
-        if (variantA != 2) {
-            System.out.println("Реализован только вариант А2.");
-            return;
-        }
         Predicate<LaundryRequest> selection = r -> r.getWeightUnits() >= 3 && r.getPriority() >= 2;
         LaundryQueue<LaundryRequest> newQueue = new LaundryQueue<>(10);
         for (LaundryRequest request : createRequests()) {
@@ -125,7 +108,7 @@ public class Main {
         System.out.println("ID добавленных заявок: " + ids);
         System.out.println("Сумма загрузок: " + load);
         try {
-            variantB = StageAccess.second(n, ids, load);
+            variantB = StageAccess.second(N, ids, load);
             queue = newQueue;
             completedStage = 1;
             System.out.println("Назначен вариант задания 2: Б" + variantB);
@@ -143,10 +126,6 @@ public class Main {
             System.out.println("Этап 2 уже выполнен.");
             return;
         }
-        if (variantB != 5) {
-            System.out.println("Реализован только вариант Б5.");
-            return;
-        }
         List<LaundryRequest> accepted = runBatch();
         List<Integer> ids = accepted.stream()
                 .map(LaundryRequest::getId)
@@ -157,7 +136,7 @@ public class Main {
         System.out.println("Загрузка цикла: " + load);
         System.out.println("Режим цикла: " + mode);
         try {
-            variantC = StageAccess.third(n, ids, load, mode);
+            variantC = StageAccess.third(N, ids, load, mode);
             completedStage = 2;
             System.out.println("Назначен вариант задания 3: В" + variantC);
         } catch (IllegalStateException e) {
@@ -172,10 +151,6 @@ public class Main {
         }
         if (completedStage >= 3) {
             System.out.println("Этап 3 уже выполнен.");
-            return;
-        }
-        if (variantC != 5) {
-            System.out.println("Реализован только вариант В5.");
             return;
         }
         if (!queue.add(new RegularLaundry(313, 33, 2, 2, 5))) {
